@@ -1,24 +1,24 @@
 const { pactWith } = require('jest-pact');
 const path = require('path');
-const github = require('./github');
+const discord = require('./discord');
 
 jest.mock('./config', () => ({
   COGNITO_REDIRECT_URI: 'COGNITO_REDIRECT_URI',
-  GITHUB_CLIENT_SECRET: 'GITHUB_CLIENT_SECRET',
-  GITHUB_CLIENT_ID: 'GITHUB_CLIENT_ID',
-  GITHUB_API_URL: 'GITHUB_API_URL',
-  GITHUB_LOGIN_URL: 'GITHUB_LOGIN_URL',
+  DISCORD_CLIENT_SECRET: 'DISCORD_CLIENT_SECRET',
+  DISCORD_CLIENT_ID: 'DISCORD_CLIENT_ID',
+  DISCORD_API_URL: 'DISCORD_API_URL',
+  DISCORD_LOGIN_URL: 'DISCORD_LOGIN_URL',
 }));
 
 pactWith(
   {
     log: path.resolve(process.cwd(), 'logs', 'mockserver-integration.log'),
     dir: path.resolve(process.cwd(), 'pacts'),
-    consumer: 'github-cognito-openid-wrapper',
-    provider: 'GitHub.com',
+    consumer: 'discord-cognito-openid-wrapper',
+    provider: 'Discord.com',
   },
   (provider) => {
-    describe('GitHub Client Pact', () => {
+    describe('Discord Client Pact', () => {
       describe('UserDetails endpoint', () => {
         const userDetailsRequest = {
           uponReceiving: 'a request for user details',
@@ -26,7 +26,7 @@ pactWith(
             method: 'GET',
             path: '/user',
             headers: {
-              Accept: 'application/vnd.github.v3+json',
+              Accept: 'application/vnd.discord.v3+json',
               Authorization: `token THIS_IS_MY_TOKEN`,
             },
           },
@@ -50,7 +50,7 @@ pactWith(
 
           // add expectations
           it('returns a sucessful body', () =>
-            github(provider.mockService.baseUrl)
+            discord(provider.mockService.baseUrl)
               .getUserDetails('THIS_IS_MY_TOKEN')
               .then((response) => {
                 expect(response).toEqual(EXPECTED_BODY);
@@ -79,7 +79,7 @@ pactWith(
           // add expectations
           it('rejects the promise', () =>
             expect(
-              github(provider.mockService.baseUrl).getUserDetails(
+              discord(provider.mockService.baseUrl).getUserDetails(
                 'THIS_IS_MY_TOKEN'
               )
             ).rejects.toThrow(
@@ -109,12 +109,12 @@ pactWith(
           // add expectations
           it('rejects the promise', () =>
             expect(
-              github(provider.mockService.baseUrl).getUserDetails(
+              discord(provider.mockService.baseUrl).getUserDetails(
                 'THIS_IS_MY_TOKEN'
               )
             ).rejects.toThrow(
               new Error(
-                'GitHub API responded with a failure: This is an error, This is a description'
+                'Discord API responded with a failure: This is an error, This is a description'
               )
             ));
         });
@@ -127,7 +127,7 @@ pactWith(
             method: 'GET',
             path: '/user/emails',
             headers: {
-              Accept: 'application/vnd.github.v3+json',
+              Accept: 'application/vnd.discord.v3+json',
               Authorization: `token THIS_IS_MY_TOKEN`,
             },
           },
@@ -151,7 +151,7 @@ pactWith(
 
           // add expectations
           it('returns a sucessful body', () =>
-            github(provider.mockService.baseUrl)
+            discord(provider.mockService.baseUrl)
               .getUserEmails('THIS_IS_MY_TOKEN')
               .then((response) => {
                 expect(response).toEqual(EXPECTED_BODY);
@@ -180,7 +180,7 @@ pactWith(
           // add expectations
           it('rejects the promise', () =>
             expect(
-              github(provider.mockService.baseUrl).getUserEmails(
+              discord(provider.mockService.baseUrl).getUserEmails(
                 'THIS_IS_MY_TOKEN'
               )
             ).rejects.toThrow(
@@ -210,12 +210,12 @@ pactWith(
           // add expectations
           it('rejects the promise', () =>
             expect(
-              github(provider.mockService.baseUrl).getUserEmails(
+              discord(provider.mockService.baseUrl).getUserEmails(
                 'THIS_IS_MY_TOKEN'
               )
             ).rejects.toThrow(
               new Error(
-                'GitHub API responded with a failure: This is an error, This is a description'
+                'Discord API responded with a failure: This is an error, This is a description'
               )
             ));
         });
@@ -225,14 +225,14 @@ pactWith(
         describe('always', () => {
           it('returns a redirect url', () => {
             expect(
-              github(provider.mockService.baseUrl).getAuthorizeUrl(
+              discord(provider.mockService.baseUrl).getAuthorizeUrl(
                 'client_id',
                 'scope',
                 'state',
                 'response_type'
               )
             ).toEqual(
-              `${provider.mockService.baseUrl}/login/oauth/authorize?client_id=client_id&scope=scope&state=state&response_type=response_type`
+              `${provider.mockService.baseUrl}/login/oauth2/authorize?client_id=client_id&scope=scope&state=state&response_type=response_type`
             );
           });
         });
@@ -243,7 +243,7 @@ pactWith(
           uponReceiving: 'a request for an access token',
           withRequest: {
             method: 'POST',
-            path: '/login/oauth/access_token',
+            path: '/login/oauth2/access_token',
             headers: {
               Accept: 'application/json',
               'Content-Type': 'application/json',
@@ -252,10 +252,10 @@ pactWith(
               // OAuth required fields
               grant_type: 'authorization_code',
               redirect_uri: 'COGNITO_REDIRECT_URI',
-              client_id: 'GITHUB_CLIENT_ID',
-              // GitHub Specific
+              client_id: 'DISCORD_CLIENT_ID',
+              // Discord Specific
               response_type: 'code',
-              client_secret: 'GITHUB_CLIENT_SECRET',
+              client_secret: 'DISCORD_CLIENT_SECRET',
               code: 'SOME_CODE',
             },
           },
@@ -284,7 +284,7 @@ pactWith(
 
           // add expectations
           it('returns a sucessful body', () =>
-            github(provider.mockService.baseUrl)
+            discord(provider.mockService.baseUrl)
               .getToken('SOME_CODE')
               .then((response) => {
                 expect(response).toEqual(EXPECTED_BODY);
@@ -312,7 +312,7 @@ pactWith(
 
           // add expectations
           it('rejects the promise', (done) => {
-            github(provider.mockService.baseUrl)
+            discord(provider.mockService.baseUrl)
               .getToken('SOME_CODE')
               .catch(() => {
                 done();
@@ -341,7 +341,7 @@ pactWith(
 
           // add expectations
           it('rejects the promise', (done) => {
-            github(provider.mockService.baseUrl)
+            discord(provider.mockService.baseUrl)
               .getToken('SOME_CODE')
               .catch(() => {
                 done();

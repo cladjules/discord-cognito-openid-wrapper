@@ -1,15 +1,15 @@
 const openid = require('./openid');
-const github = require('./github');
+const discord = require('./discord');
 const crypto = require('./crypto');
 
-jest.mock('./github');
+jest.mock('./discord');
 jest.mock('./crypto');
 
 const MOCK_TOKEN = 'MOCK_TOKEN';
 const MOCK_CODE = 'MOCK_CODE';
 
 describe('openid domain layer', () => {
-  const githubMock = {
+  const discordMock = {
     getUserEmails: jest.fn(),
     getUserDetails: jest.fn(),
     getToken: jest.fn(),
@@ -17,12 +17,12 @@ describe('openid domain layer', () => {
   };
 
   beforeEach(() => {
-    github.mockImplementation(() => githubMock);
+    discord.mockImplementation(() => discordMock);
   });
 
   describe('userinfo function', () => {
     const mockEmailsWithPrimary = (withPrimary) => {
-      githubMock.getUserEmails.mockImplementation(() =>
+      discordMock.getUserEmails.mockImplementation(() =>
         Promise.resolve([
           {
             primary: false,
@@ -37,7 +37,7 @@ describe('openid domain layer', () => {
     describe('with a good token', () => {
       describe('with complete user details', () => {
         beforeEach(() => {
-          githubMock.getUserDetails.mockImplementation(() =>
+          discordMock.getUserDetails.mockImplementation(() =>
             Promise.resolve({
               sub: 'Some sub',
               name: 'some name',
@@ -81,10 +81,10 @@ describe('openid domain layer', () => {
     });
     describe('with a bad token', () => {
       beforeEach(() => {
-        githubMock.getUserDetails.mockImplementation(() =>
+        discordMock.getUserDetails.mockImplementation(() =>
           Promise.reject(new Error('Bad token'))
         );
-        githubMock.getUserEmails.mockImplementation(() =>
+        discordMock.getUserEmails.mockImplementation(() =>
           Promise.reject(new Error('Bad token'))
         );
       });
@@ -97,7 +97,7 @@ describe('openid domain layer', () => {
   describe('token function', () => {
     describe('with the correct code', () => {
       beforeEach(() => {
-        githubMock.getToken.mockImplementation(() =>
+        discordMock.getToken.mockImplementation(() =>
           Promise.resolve({
             access_token: 'SOME_TOKEN',
             token_type: 'bearer',
@@ -123,7 +123,7 @@ describe('openid domain layer', () => {
     });
     describe('with a bad code', () => {
       beforeEach(() => {
-        githubMock.getToken.mockImplementation(() =>
+        discordMock.getToken.mockImplementation(() =>
           Promise.reject(new Error('Bad code'))
         );
       });
@@ -142,7 +142,7 @@ describe('openid domain layer', () => {
   });
   describe('authorization', () => {
     beforeEach(() => {
-      githubMock.getAuthorizeUrl.mockImplementation(
+      discordMock.getAuthorizeUrl.mockImplementation(
         (client_id, scope, state, response_type) =>
           `https://not-a-real-host.com/authorize?client_id=${client_id}&scope=${scope}&state=${state}&response_type=${response_type}`
       );

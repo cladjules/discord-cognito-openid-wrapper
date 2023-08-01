@@ -1,48 +1,50 @@
 const logger = require('./connectors/logger');
 const { NumericDate } = require('./helpers');
 const crypto = require('./crypto');
-const github = require('./github');
+const discord = require('./discord');
 
 const getJwks = () => ({ keys: [crypto.getPublicKey()] });
 
 const getUserInfo = (accessToken) =>
   Promise.all([
-    github()
+    discord()
       .getUserDetails(accessToken)
       .then((userDetails) => {
         logger.debug('Fetched user details: %j', userDetails, {});
-        // Here we map the github user response to the standard claims from
+        // Here we map the discord user response to the standard claims from
         // OpenID. The mapping was constructed by following
-        // https://developer.github.com/v3/users/
+        // https://developer.discord.com/v3/users/
         // and http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
         const claims = {
           sub: `${userDetails.id}`, // OpenID requires a string
-          name: userDetails.name,
-          preferred_username: userDetails.login,
-          profile: userDetails.html_url,
-          picture: userDetails.avatar_url,
-          website: userDetails.blog,
+          name: `${userDetails.username}#${userDetails.discriminator}`,
+          preferred_username: userDetails.username,
+          profile: 'https://discordapp.com',
+          picture: `https://cdn.discordapp.com/avatars/${userDetails.id}/${
+            userDetails.avatar
+          }.png`,
+          website: 'https://discordapp.com',
           updated_at: NumericDate(
             // OpenID requires the seconds since epoch in UTC
-            new Date(Date.parse(userDetails.updated_at))
+            userDetails.updated_at ? new Date(Date.parse(userDetails.updated_at)) : new Date()
           ),
         };
         logger.debug('Resolved claims: %j', claims, {});
         return claims;
       }),
-    github()
+    discord()
       .getUserEmails(accessToken)
-      .then((userEmails) => {
-        logger.debug('Fetched user emails: %j', userEmails, {});
-        const primaryEmail = userEmails.find((email) => email.primary);
+      .then((userData) => {
+        const primaryEmail = userData.email;
+
         if (primaryEmail === undefined) {
           throw new Error('User did not have a primary email address');
         }
+        
         const claims = {
-          email: primaryEmail.email,
-          email_verified: primaryEmail.verified,
+          email: primaryEmail,
+          email_verified: userData.verified
         };
-        logger.debug('Resolved claims: %j', claims, {});
         return claims;
       }),
   ]).then((claims) => {
@@ -55,23 +57,23 @@ const getUserInfo = (accessToken) =>
   });
 
 const getAuthorizeUrl = (client_id, scope, state, response_type) =>
-  github().getAuthorizeUrl(client_id, scope, state, response_type);
+  discord().getAuthorizeUrl(client_id, scope, state, response_type);
 
 const getTokens = (code, state, host) =>
-  github()
+  discord()
     .getToken(code, state)
-    .then((githubToken) => {
-      logger.debug('Got token: %s', githubToken, {});
-      // GitHub returns scopes separated by commas
+    .then((discordToken) => {
+      logger.debug('Got token: %s', discordToken, {});
+      // Discord returns scopes separated by commas
       // But OAuth wants them to be spaces
       // https://tools.ietf.org/html/rfc6749#section-5.1
       // Also, we need to add openid as a scope,
-      // since GitHub will have stripped it
-      const scope = `openid ${githubToken.scope.replace(',', ' ')}`;
+      // since Discord will have stripped it
+      const scope = `openid ${discordToken.scope.replace(',', ' ')}`;
 
       // ** JWT ID Token required fields **
       // iss - issuer https url
-      // aud - audience that this token is valid for (GITHUB_CLIENT_ID)
+      // aud - audience that this token is valid for (DISCORD_CLIENT_ID)
       // sub - subject identifier - must be unique
       // ** Also required, but provided by jsonwebtoken **
       // exp - expiry time for the id token (seconds since epoch in UTC)
@@ -87,7 +89,7 @@ const getTokens = (code, state, host) =>
 
         const idToken = crypto.makeIdToken(payload, host);
         const tokenResponse = {
-          ...githubToken,
+          ...discordToken,
           scope,
           id_token: idToken,
         };
