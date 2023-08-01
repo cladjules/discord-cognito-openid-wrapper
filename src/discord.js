@@ -80,7 +80,7 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
       );
 
       const bufferAuth = Buffer.from(
-        `Basic ${btoa(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`)}`
+        `${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`
       );
       const authorization = bufferAuth.toString('base64');
 
@@ -88,7 +88,7 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
         method: 'post',
         url: urls.oauthToken,
         headers: {
-          Authorization: authorization,
+          Authorization: `Basic ${authorization}`,
           'content-type': 'application/x-www-form-urlencoded',
         },
         data: qs.stringify(data),
