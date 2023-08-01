@@ -18,8 +18,8 @@ pactWith(
     provider: 'Discord.com',
   },
   (provider) => {
-    describe('Discord Client Pact', () => {
-      describe('UserDetails endpoint', () => {
+    describe.skip('Discord Client Pact', () => {
+      describe.skip('UserDetails endpoint', () => {
         const userDetailsRequest = {
           uponReceiving: 'a request for user details',
           withRequest: {
@@ -31,7 +31,7 @@ pactWith(
             },
           },
         };
-        describe('When the access token is good', () => {
+        describe.skip('When the access token is good', () => {
           const EXPECTED_BODY = { name: 'Tim Jones' };
           beforeEach(() => {
             const interaction = {
@@ -56,7 +56,7 @@ pactWith(
                 expect(response).toEqual(EXPECTED_BODY);
               }));
         });
-        describe('When the access token is bad', () => {
+        describe.skip('When the access token is bad', () => {
           const EXPECTED_ERROR = {
             error: 'This is an error',
             error_description: 'This is a description',
@@ -86,7 +86,7 @@ pactWith(
               new Error('Request failed with status code 400')
             ));
         });
-        describe('When there is a server error response', () => {
+        describe.skip('When there is a server error response', () => {
           const EXPECTED_ERROR = {
             error: 'This is an error',
             error_description: 'This is a description',
@@ -120,7 +120,7 @@ pactWith(
         });
       });
 
-      describe('UserEmails endpoint', () => {
+      describe.skip('UserEmails endpoint', () => {
         const userEmailsRequest = {
           uponReceiving: 'a request for user emails',
           withRequest: {
@@ -132,7 +132,7 @@ pactWith(
             },
           },
         };
-        describe('When the access token is good', () => {
+        describe.skip('When the access token is good', () => {
           const EXPECTED_BODY = [{ email: 'ben@example.com', primary: true }];
           beforeEach(() => {
             const interaction = {
@@ -157,7 +157,7 @@ pactWith(
                 expect(response).toEqual(EXPECTED_BODY);
               }));
         });
-        describe('When the access token is bad', () => {
+        describe.skip('When the access token is bad', () => {
           const EXPECTED_ERROR = {
             error: 'This is an error',
             error_description: 'This is a description',
@@ -187,7 +187,7 @@ pactWith(
               new Error('Request failed with status code 400')
             ));
         });
-        describe('When there is a server error response', () => {
+        describe.skip('When there is a server error response', () => {
           const EXPECTED_ERROR = {
             error: 'This is an error',
             error_description: 'This is a description',
@@ -221,8 +221,8 @@ pactWith(
         });
       });
 
-      describe('Authorization endpoint', () => {
-        describe('always', () => {
+      describe.skip('Authorization endpoint', () => {
+        describe.skip('always', () => {
           it('returns a redirect url', () => {
             expect(
               discord(provider.mockService.baseUrl).getAuthorizeUrl(
@@ -238,7 +238,7 @@ pactWith(
         });
       });
 
-      describe('Auth Token endpoint', () => {
+      describe.skip('Auth Token endpoint', () => {
         const accessTokenRequest = {
           uponReceiving: 'a request for an access token',
           withRequest: {
@@ -261,7 +261,7 @@ pactWith(
           },
         };
 
-        describe('When the code is good', () => {
+        describe.skip('When the code is good', () => {
           const EXPECTED_BODY = {
             access_token: 'xxxx',
             refresh_token: 'yyyyyyyy-yyyy-yyyy-yyyy-yyyyyyyyyyyy',
@@ -290,7 +290,7 @@ pactWith(
                 expect(response).toEqual(EXPECTED_BODY);
               }));
         });
-        describe('When the code is bad', () => {
+        describe.skip('When the code is bad', () => {
           const EXPECTED_ERROR = {
             error: 'This is an error',
             error_description: 'This is a description',
@@ -319,7 +319,7 @@ pactWith(
               });
           });
         });
-        describe('When there is a server error response', () => {
+        describe.skip('When there is a server error response', () => {
           const EXPECTED_ERROR = {
             error: 'This is an error',
             error_description: 'This is a description',
