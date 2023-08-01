@@ -17,16 +17,19 @@ const getUserInfo = (accessToken) =>
         // and http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
         const claims = {
           sub: `${userDetails.id}`, // OpenID requires a string
-          name: `${userDetails.username}#${userDetails.discriminator}`,
-          preferred_username: userDetails.username,
+          name:
+            userDetails.discriminator && userDetails.discriminator !== '0'
+              ? `${userDetails.username}#${userDetails.discriminator}`
+              : userDetails.username,
+          preferred_username: userDetails.global_name,
           profile: 'https://discordapp.com',
-          picture: `https://cdn.discordapp.com/avatars/${userDetails.id}/${
-            userDetails.avatar
-          }.png`,
+          picture: `https://cdn.discordapp.com/avatars/${userDetails.id}/${userDetails.avatar}.png`,
           website: 'https://discordapp.com',
           updated_at: NumericDate(
             // OpenID requires the seconds since epoch in UTC
-            userDetails.updated_at ? new Date(Date.parse(userDetails.updated_at)) : new Date()
+            userDetails.updated_at
+              ? new Date(Date.parse(userDetails.updated_at))
+              : new Date()
           ),
         };
         logger.debug('Resolved claims: %j', claims, {});
@@ -40,10 +43,10 @@ const getUserInfo = (accessToken) =>
         if (primaryEmail === undefined) {
           throw new Error('User did not have a primary email address');
         }
-        
+
         const claims = {
           email: primaryEmail,
-          email_verified: userData.verified
+          email_verified: userData.verified,
         };
         return claims;
       }),
