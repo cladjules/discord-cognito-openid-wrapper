@@ -5,7 +5,7 @@
   "main": "dist-web/server.js",
   "repository": {
     "type": "git",
-    "url": "https://discord.com/cladjules/discord-cognito-openid-wrapper.git"
+    "url": "https://github.com/cladjules/discord-cognito-openid-wrapper.git"
   },
   "scripts": {
     "build": "webpack",

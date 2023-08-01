@@ -6,18 +6,18 @@ const {
   DISCORD_CLIENT_SECRET,
   COGNITO_REDIRECT_URI,
   DISCORD_API_URL,
-  DISCORD_LOGIN_URL,
+  // DISCORD_LOGIN_URL,
 } = require('./config');
 const logger = require('./connectors/logger');
 
 const getApiEndpoints = (
-  apiBaseUrl = DISCORD_API_URL,
-  loginBaseUrl = DISCORD_LOGIN_URL
+  apiBaseUrl = DISCORD_API_URL
+  // loginBaseUrl = DISCORD_LOGIN_URL
 ) => ({
   userDetails: `${apiBaseUrl}/users/@me`,
   userEmails: `${apiBaseUrl}/users/@me`,
   oauthToken: `${apiBaseUrl}/oauth2/token`,
-  oauthAuthorize: `${apiBaseUrl}/oauth2/authorize`
+  oauthAuthorize: `${apiBaseUrl}/oauth2/authorize`,
 });
 
 const check = (response) => {
@@ -52,7 +52,7 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
     getAuthorizeUrl: (client_id, scope, state, response_type) => {
       const cleanScope = scope
         .split(' ')
-        .filter(i => i !== 'openid')
+        .filter((i) => i !== 'openid')
         .join(' ');
       return `${
         urls.oauthAuthorize
@@ -69,7 +69,7 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
         // OAuth required fields
         grant_type: 'authorization_code',
         redirect_uri: COGNITO_REDIRECT_URI,
-        code: code,
+        code,
       };
 
       logger.debug(
@@ -79,7 +79,9 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
         {}
       );
 
-      const bufferAuth = Buffer.from(`Basic ${btoa(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`)}`);
+      const bufferAuth = Buffer.from(
+        `Basic ${btoa(`${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`)}`
+      );
       const authorization = bufferAuth.toString('base64');
 
       return axios({
@@ -87,7 +89,7 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
         url: urls.oauthToken,
         headers: {
           Authorization: authorization,
-          'content-type': 'application/x-www-form-urlencoded'
+          'content-type': 'application/x-www-form-urlencoded',
         },
         data: qs.stringify(data),
       }).then(check);
