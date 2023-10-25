@@ -2,12 +2,13 @@ const logger = require('./connectors/logger');
 const { NumericDate } = require('./helpers');
 const crypto = require('./crypto');
 const discord = require('./discord');
+const { PROVIDER_NAME } = require('./config');
 
 const getJwks = () => ({ keys: [crypto.getPublicKey()] });
 
-const getUserInfo = (accessToken) =>
-  Promise.all([
-    discord()
+const getUserInfo = (accessToken) => {
+  if (PROVIDER_NAME === 'discord') {
+    return discord()
       .getUserDetails(accessToken)
       .then((userDetails) => {
         logger.debug('Fetched user details: %j', userDetails, {});
@@ -17,6 +18,8 @@ const getUserInfo = (accessToken) =>
         // and http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
         const claims = {
           sub: `${userDetails.id}`, // OpenID requires a string
+          email: userDetails.email,
+          email_verified: userDetails.verified,
           name:
             userDetails.discriminator && userDetails.discriminator !== '0'
               ? `${userDetails.username}#${userDetails.discriminator}`
@@ -34,30 +37,40 @@ const getUserInfo = (accessToken) =>
         };
         logger.debug('Resolved claims: %j', claims, {});
         return claims;
-      }),
-    discord()
-      .getUserEmails(accessToken)
-      .then((userData) => {
-        const primaryEmail = userData.email;
-
-        if (primaryEmail === undefined) {
-          throw new Error('User did not have a primary email address');
-        }
-
+      });
+  }
+  if (PROVIDER_NAME === 'roblox') {
+    return discord()
+      .getUserDetails(accessToken)
+      .then((userDetails) => {
+        logger.debug('Fetched user details: %j', userDetails, {});
+        // Here we map the discord user response to the standard claims from
+        // OpenID. The mapping was constructed by following
+        // https://create.roblox.com/docs/en-us/cloud/reference/oauth2#get-v1userinfo
+        // and http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
         const claims = {
-          email: primaryEmail,
-          email_verified: userData.verified,
+          sub: `${userDetails.sub}`, // OpenID requires a string
+          email: userDetails.email,
+          email_verified: userDetails.verified,
+          name: userDetails.nickname || userDetails.name,
+          preferred_username: userDetails.preferred_username,
+          profile: userDetails.profile,
+          website: 'https://www.roblox.com',
+          picture: userDetails.picture,
+          updated_at: NumericDate(
+            // OpenID requires the seconds since epoch in UTC
+            userDetails.created_at
+              ? new Date(Date.parse(userDetails.created_at))
+              : new Date()
+          ),
         };
+        logger.debug('Resolved claims: %j', claims, {});
         return claims;
-      }),
-  ]).then((claims) => {
-    const mergedClaims = claims.reduce(
-      (acc, claim) => ({ ...acc, ...claim }),
-      {}
-    );
-    logger.debug('Resolved combined claims: %j', mergedClaims, {});
-    return mergedClaims;
-  });
+      });
+  }
+
+  return Promise.resolve({});
+};
 
 const getAuthorizeUrl = (client_id, scope, state, response_type) =>
   discord().getAuthorizeUrl(client_id, scope, state, response_type);
@@ -76,7 +89,7 @@ const getTokens = (code, state, host) =>
 
       // ** JWT ID Token required fields **
       // iss - issuer https url
-      // aud - audience that this token is valid for (DISCORD_CLIENT_ID)
+      // aud - audience that this token is valid for (OAUTH_CLIENT_ID)
       // sub - subject identifier - must be unique
       // ** Also required, but provided by jsonwebtoken **
       // exp - expiry time for the id token (seconds since epoch in UTC)

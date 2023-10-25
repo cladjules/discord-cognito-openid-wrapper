@@ -10,7 +10,6 @@ const MOCK_CODE = 'MOCK_CODE';
 
 describe.skip('openid domain layer', () => {
   const discordMock = {
-    getUserEmails: jest.fn(),
     getUserDetails: jest.fn(),
     getToken: jest.fn(),
     getAuthorizeUrl: jest.fn(),
@@ -21,19 +20,6 @@ describe.skip('openid domain layer', () => {
   });
 
   describe.skip('userinfo function', () => {
-    const mockEmailsWithPrimary = (withPrimary) => {
-      discordMock.getUserEmails.mockImplementation(() =>
-        Promise.resolve([
-          {
-            primary: false,
-            email: 'not-this-email@example.com',
-            verified: false,
-          },
-          { primary: withPrimary, email: 'email@example.com', verified: true },
-        ])
-      );
-    };
-
     describe.skip('with a good token', () => {
       describe.skip('with complete user details', () => {
         beforeEach(() => {
@@ -82,9 +68,6 @@ describe.skip('openid domain layer', () => {
     describe.skip('with a bad token', () => {
       beforeEach(() => {
         discordMock.getUserDetails.mockImplementation(() =>
-          Promise.reject(new Error('Bad token'))
-        );
-        discordMock.getUserEmails.mockImplementation(() =>
           Promise.reject(new Error('Bad token'))
         );
       });

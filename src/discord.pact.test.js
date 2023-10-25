@@ -4,10 +4,9 @@ const discord = require('./discord');
 
 jest.mock('./config', () => ({
   COGNITO_REDIRECT_URI: 'COGNITO_REDIRECT_URI',
-  DISCORD_CLIENT_SECRET: 'DISCORD_CLIENT_SECRET',
-  DISCORD_CLIENT_ID: 'DISCORD_CLIENT_ID',
-  DISCORD_API_URL: 'DISCORD_API_URL',
-  DISCORD_LOGIN_URL: 'DISCORD_LOGIN_URL',
+  OAUTH_CLIENT_SECRET: 'OAUTH_CLIENT_SECRET',
+  OAUTH_CLIENT_ID: 'OAUTH_CLIENT_ID',
+  OAUTH_API_URL: 'OAUTH_API_URL',
 }));
 
 pactWith(
@@ -120,107 +119,6 @@ pactWith(
         });
       });
 
-      describe.skip('UserEmails endpoint', () => {
-        const userEmailsRequest = {
-          uponReceiving: 'a request for user emails',
-          withRequest: {
-            method: 'GET',
-            path: '/user/emails',
-            headers: {
-              Accept: 'application/vnd.discord.v3+json',
-              Authorization: `token THIS_IS_MY_TOKEN`,
-            },
-          },
-        };
-        describe.skip('When the access token is good', () => {
-          const EXPECTED_BODY = [{ email: 'ben@example.com', primary: true }];
-          beforeEach(() => {
-            const interaction = {
-              ...userEmailsRequest,
-              state: 'Where the access token is good',
-              willRespondWith: {
-                status: 200,
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: EXPECTED_BODY,
-              },
-            };
-            return provider.addInteraction(interaction);
-          });
-
-          // add expectations
-          it('returns a sucessful body', () =>
-            discord(provider.mockService.baseUrl)
-              .getUserEmails('THIS_IS_MY_TOKEN')
-              .then((response) => {
-                expect(response).toEqual(EXPECTED_BODY);
-              }));
-        });
-        describe.skip('When the access token is bad', () => {
-          const EXPECTED_ERROR = {
-            error: 'This is an error',
-            error_description: 'This is a description',
-          };
-          beforeEach(() => {
-            const interaction = {
-              ...userEmailsRequest,
-              state: 'Where the access token is bad',
-              willRespondWith: {
-                status: 400,
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: EXPECTED_ERROR,
-              },
-            };
-            return provider.addInteraction(interaction);
-          });
-
-          // add expectations
-          it('rejects the promise', () =>
-            expect(
-              discord(provider.mockService.baseUrl).getUserEmails(
-                'THIS_IS_MY_TOKEN'
-              )
-            ).rejects.toThrow(
-              new Error('Request failed with status code 400')
-            ));
-        });
-        describe.skip('When there is a server error response', () => {
-          const EXPECTED_ERROR = {
-            error: 'This is an error',
-            error_description: 'This is a description',
-          };
-          beforeEach(() => {
-            const interaction = {
-              ...userEmailsRequest,
-              state: 'Where there is a server error response',
-              willRespondWith: {
-                status: 200,
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: EXPECTED_ERROR,
-              },
-            };
-            return provider.addInteraction(interaction);
-          });
-
-          // add expectations
-          it('rejects the promise', () =>
-            expect(
-              discord(provider.mockService.baseUrl).getUserEmails(
-                'THIS_IS_MY_TOKEN'
-              )
-            ).rejects.toThrow(
-              new Error(
-                'Discord API responded with a failure: This is an error, This is a description'
-              )
-            ));
-        });
-      });
-
       describe.skip('Authorization endpoint', () => {
         describe.skip('always', () => {
           it('returns a redirect url', () => {
@@ -252,10 +150,10 @@ pactWith(
               // OAuth required fields
               grant_type: 'authorization_code',
               redirect_uri: 'COGNITO_REDIRECT_URI',
-              client_id: 'DISCORD_CLIENT_ID',
+              client_id: 'OAUTH_CLIENT_ID',
               // Discord Specific
               response_type: 'code',
-              client_secret: 'DISCORD_CLIENT_SECRET',
+              client_secret: 'OAUTH_CLIENT_SECRET',
               code: 'SOME_CODE',
             },
           },

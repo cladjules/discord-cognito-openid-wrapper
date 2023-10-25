@@ -1,16 +1,16 @@
 #!/bin/bash -eu
 
 # Variables always required
-export DISCORD_CLIENT_ID=# <Discord OAuth App Client ID>
-export DISCORD_CLIENT_SECRET=# <Discord OAuth App Client Secret>
+export OAUTH_CLIENT_ID=# <Discord OAuth App Client ID>
+export OAUTH_CLIENT_SECRET=# <Discord OAuth App Client Secret>
 export COGNITO_REDIRECT_URI=# https://<Your Cognito Domain>/oauth2/idpresponse
 # Change these if used with Discord Enterprise (see below)
-export DISCORD_API_URL=https://discord.com/api
-export DISCORD_LOGIN_URL=https://discord.com/api
+# export PROVIDER_NAME=discord|roblox // discord and roblox are supported right now
+export PROVIDER_NAME=discord
+export OAUTH_API_URL=https://discord.com/api
 
-# Alternate URLs if used with Discord Enterprise
-# DISCORD_API_URL=# https://<Discord Enterprise Host>/api/v3
-# DISCORD_LOGIN_URL=# https://<Discord Enterprise Host>
+# export PROVIDER_NAME=roblox
+# export OAUTH_API_URL=https://apis.roblox.com/oauth
 
 # Variables required if Splunk logger is used
 # SPLUNK_URL=# https://<Splunk HEC>/services/collector/event/1.0

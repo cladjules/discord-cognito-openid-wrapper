@@ -1,9 +1,9 @@
 module.exports = {
-  DISCORD_CLIENT_ID: process.env.DISCORD_CLIENT_ID,
-  DISCORD_CLIENT_SECRET: process.env.DISCORD_CLIENT_SECRET,
+  PROVIDER_NAME: process.env.PROVIDER_NAME,
+  OAUTH_CLIENT_ID: process.env.OAUTH_CLIENT_ID,
+  OAUTH_CLIENT_SECRET: process.env.OAUTH_CLIENT_SECRET,
   COGNITO_REDIRECT_URI: process.env.COGNITO_REDIRECT_URI,
-  DISCORD_API_URL: process.env.DISCORD_API_URL,
-  DISCORD_LOGIN_URL: process.env.DISCORD_LOGIN_URL,
+  OAUTH_API_URL: process.env.OAUTH_API_URL,
   PORT: parseInt(process.env.PORT, 10) || undefined,
 
   // Splunk logging variables

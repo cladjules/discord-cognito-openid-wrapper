@@ -17,8 +17,9 @@ const ensureNumber = (variableName) => {
 };
 
 const requiredStrings = [
-  'DISCORD_CLIENT_ID',
-  'DISCORD_CLIENT_SECRET',
+  'OAUTH_CLIENT_ID',
+  'OAUTH_CLIENT_SECRET',
+  'PROVIDER_NAME',
   'COGNITO_REDIRECT_URI',
 ];
 

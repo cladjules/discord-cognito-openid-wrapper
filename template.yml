@@ -1,7 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
-    Discord Cognito OpenID Wrapper (SSO)
+  Discord Cognito OpenID Wrapper (SSO)
 
 # More info about Globals: https://discord.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
@@ -10,16 +10,16 @@ Globals:
     Timeout: 15
     Environment:
       Variables:
-        DISCORD_CLIENT_ID:
+        OAUTH_CLIENT_ID:
           Ref: DiscordClientIdParameter
-        DISCORD_CLIENT_SECRET:
+        OAUTH_CLIENT_SECRET:
           Ref: DiscordClientSecretParameter
         COGNITO_REDIRECT_URI:
           Ref: CognitoRedirectUriParameter
-        DISCORD_API_URL:
+        OAUTH_API_URL:
           Ref: DiscordUrlParameter
-        DISCORD_LOGIN_URL:
-          Ref: DiscordLoginUrlParameter
+        PROVIDER_NAME:
+          Ref: ProviderName
 
 Parameters:
   DiscordClientIdParameter:
@@ -28,13 +28,11 @@ Parameters:
     Type: String
   CognitoRedirectUriParameter:
     Type: String
+  ProviderName:
+    Type: String
   DiscordUrlParameter:
     Type: String
-    Default: "https://discord.com/api"
-    MinLength: 1
-  DiscordLoginUrlParameter:
-    Type: String
-    Default: "https://discord.com/api"
+    Default: 'https://discord.com/api'
     MinLength: 1
   StageNameParameter:
     Type: String
@@ -44,7 +42,7 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       StageName: !Ref StageNameParameter
-      OpenApiVersion: "2.0"
+      OpenApiVersion: '2.0'
   OpenIdDiscovery:
     Type: AWS::Serverless::Function
     Properties:
@@ -119,6 +117,6 @@ Resources:
             RestApiId: !Ref DiscordOAuthApi
 
 Outputs:
-    DiscordShimIssuer:
-      Description: "Discord OpenID Shim Issuer"
-      Value: !Sub "https://${DiscordOAuthApi}.execute-api.${AWS::Region}.amazonaws.com/${StageNameParameter}"
+  DiscordShimIssuer:
+    Description: 'Discord OpenID Shim Issuer'
+    Value: !Sub 'https://${DiscordOAuthApi}.execute-api.${AWS::Region}.amazonaws.com/${StageNameParameter}'

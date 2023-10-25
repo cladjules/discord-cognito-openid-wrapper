@@ -2,37 +2,46 @@ const axios = require('axios');
 const qs = require('querystring');
 
 const {
-  DISCORD_CLIENT_ID,
-  DISCORD_CLIENT_SECRET,
+  OAUTH_CLIENT_ID,
+  OAUTH_CLIENT_SECRET,
   COGNITO_REDIRECT_URI,
-  DISCORD_API_URL,
-  // DISCORD_LOGIN_URL,
+  PROVIDER_NAME,
+  OAUTH_API_URL,
 } = require('./config');
 const logger = require('./connectors/logger');
 
-const getApiEndpoints = (
-  apiBaseUrl = DISCORD_API_URL
-  // loginBaseUrl = DISCORD_LOGIN_URL
-) => ({
-  userDetails: `${apiBaseUrl}/users/@me`,
-  userEmails: `${apiBaseUrl}/users/@me`,
-  oauthToken: `${apiBaseUrl}/oauth2/token`,
-  oauthAuthorize: `${apiBaseUrl}/oauth2/authorize`,
-});
+const getApiEndpoints = (apiBaseUrl = OAUTH_API_URL) => {
+  if (PROVIDER_NAME === 'discord') {
+    return {
+      userDetails: `${apiBaseUrl}/users/@me`,
+      oauthToken: `${apiBaseUrl}/oauth2/token`,
+      oauthAuthorize: `${apiBaseUrl}/oauth2/authorize`,
+    };
+  }
+  if (PROVIDER_NAME === 'roblox') {
+    return {
+      userDetails: `${apiBaseUrl}/v1/userinfo`,
+      oauthToken: `${apiBaseUrl}/v1/token`,
+      oauthAuthorize: `${apiBaseUrl}/v1/authorize`,
+    };
+  }
+
+  return {};
+};
 
 const check = (response) => {
   logger.debug('Checking response: %j', response, {});
   if (response.data) {
     if (response.data.error) {
       throw new Error(
-        `Discord API responded with a failure: ${response.data.error}, ${response.data.error_description}`
+        `Provider API responded with a failure: ${response.data.error}, ${response.data.error_description}`
       );
     } else if (response.status === 200) {
       return response.data;
     }
   }
   throw new Error(
-    `Discord API responded with a failure: ${response.status} (${response.statusText})`
+    `Provider API responded with a failure: ${response.status} (${response.statusText})`
   );
 };
 
@@ -41,7 +50,7 @@ const discordGet = (url, accessToken) =>
     method: 'get',
     url,
     headers: {
-      Accept: 'application/vnd.discord.v3+json',
+      Accept: `application/vnd.${PROVIDER_NAME}.v3+json`,
       Authorization: `Bearer ${accessToken}`,
     },
   });
@@ -62,8 +71,6 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
     },
     getUserDetails: (accessToken) =>
       discordGet(urls.userDetails, accessToken).then(check),
-    getUserEmails: (accessToken) =>
-      discordGet(urls.userEmails, accessToken).then(check),
     getToken: (code) => {
       const data = {
         // OAuth required fields
@@ -80,7 +87,7 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
       );
 
       const bufferAuth = Buffer.from(
-        `${DISCORD_CLIENT_ID}:${DISCORD_CLIENT_SECRET}`
+        `${OAUTH_CLIENT_ID}:${OAUTH_CLIENT_SECRET}`
       );
       const authorization = bufferAuth.toString('base64');
 

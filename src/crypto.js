@@ -1,6 +1,6 @@
 const JSONWebKey = require('json-web-key');
 const jwt = require('jsonwebtoken');
-const { DISCORD_CLIENT_ID } = require('./config');
+const { OAUTH_CLIENT_ID } = require('./config');
 const logger = require('./connectors/logger');
 
 const KEY_ID = 'jwtRS256';
@@ -18,7 +18,7 @@ module.exports = {
     const enrichedPayload = {
       ...payload,
       iss: `https://${host}`,
-      aud: DISCORD_CLIENT_ID,
+      aud: OAUTH_CLIENT_ID,
     };
     logger.debug('Signing payload %j', enrichedPayload, {});
     return jwt.sign(enrichedPayload, cert, {
