@@ -51,7 +51,7 @@ const getUserInfo = (accessToken) => {
         const claims = {
           sub: `${userDetails.sub}`, // OpenID requires a string
           email: `${userDetails.name}@roblox.com`,
-          email_verified: userDetails.verified,
+          email_verified: false,
           name: userDetails.nickname || userDetails.name,
           preferred_username: userDetails.preferred_username,
           profile: userDetails.profile,
@@ -60,7 +60,7 @@ const getUserInfo = (accessToken) => {
           updated_at: NumericDate(
             // OpenID requires the seconds since epoch in UTC
             userDetails.created_at
-              ? new Date(Date.parse(userDetails.created_at))
+              ? new Date(userDetails.created_at)
               : new Date()
           ),
         };
