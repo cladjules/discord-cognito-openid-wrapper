@@ -39,21 +39,21 @@ const getUserInfo = (accessToken) => {
         return claims;
       });
   }
-  logger.info('PROVIDER_NAME', PROVIDER_NAME);
   if (PROVIDER_NAME === 'roblox') {
     return discord()
       .getUserDetails(accessToken)
       .then((userDetails) => {
-        logger.info('userDetails');
-        logger.info(userDetails);
         logger.debug('Fetched user details: %j', userDetails, {});
         // Here we map the discord user response to the standard claims from
         // OpenID. The mapping was constructed by following
         // https://create.roblox.com/docs/en-us/cloud/reference/oauth2#get-v1userinfo
         // and http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
+
+        const username = userDetails.nickname || userDetails.name;
+
         const claims = {
           sub: `${userDetails.sub}`, // OpenID requires a string
-          email: userDetails.email,
+          email: `${userDetails.name}@roblox.com`,
           email_verified: userDetails.verified,
           name: userDetails.nickname || userDetails.name,
           preferred_username: userDetails.preferred_username,
