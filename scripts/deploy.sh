@@ -21,4 +21,4 @@ source ./config.sh
 OUTPUT_TEMPLATE_FILE="$PROJECT_ROOT/serverless-output.yml"
 aws s3 mb "s3://$BUCKET_NAME" --region "$REGION" || true
 sam package --template-file template.yml --output-template-file "$OUTPUT_TEMPLATE_FILE"  --s3-bucket "$BUCKET_NAME"
-sam deploy --region "$REGION" --template-file "$OUTPUT_TEMPLATE_FILE" --stack-name "$STACK_NAME" --parameter-overrides DiscordClientIdParameter="$OAUTH_CLIENT_ID" DiscordUrlParameter="$OAUTH_API_URL" DiscordClientSecretParameter="$OAUTH_CLIENT_SECRET" ProviderName="$PROVIDER_NAME" CognitoRedirectUriParameter="$COGNITO_REDIRECT_URI" StageNameParameter="$STAGE_NAME" --capabilities CAPABILITY_IAM
+sam deploy --region "$REGION" --template-file "$OUTPUT_TEMPLATE_FILE" --stack-name "$STACK_NAME" --parameter-overrides DiscordClientIdParameter="$OAUTH_CLIENT_ID" DiscordUrlParameter="$OAUTH_API_URL" DiscordClientSecretParameter="$OAUTH_CLIENT_SECRET" ProviderName="$PROVIDER_NAME" RobloxEmailDomain="$ROBLOX_EMAIL_DOMAIN" CognitoRedirectUriParameter="$COGNITO_REDIRECT_URI" StageNameParameter="$STAGE_NAME" --capabilities CAPABILITY_IAM

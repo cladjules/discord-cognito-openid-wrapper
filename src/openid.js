@@ -2,7 +2,7 @@ const logger = require('./connectors/logger');
 const { NumericDate } = require('./helpers');
 const crypto = require('./crypto');
 const discord = require('./discord');
-const { PROVIDER_NAME } = require('./config');
+const { PROVIDER_NAME, ROBLOX_EMAIL_DOMAIN } = require('./config');
 
 const getJwks = () => ({ keys: [crypto.getPublicKey()] });
 
@@ -50,7 +50,7 @@ const getUserInfo = (accessToken) => {
         // and http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
         const claims = {
           sub: `${userDetails.sub}`, // OpenID requires a string
-          email: `${userDetails.name}@roblox.com`,
+          email: `${userDetails.name}@${ROBLOX_EMAIL_DOMAIN}`,
           email_verified: false,
           name: userDetails.nickname || userDetails.name,
           preferred_username: userDetails.preferred_username,

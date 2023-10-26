@@ -11,6 +11,7 @@ export OAUTH_API_URL=https://discord.com/api
 
 # export PROVIDER_NAME=roblox
 # export OAUTH_API_URL=https://apis.roblox.com/oauth
+# export ROBLOX_EMAIL_DOMAIN=roblox.com
 
 # Variables required if Splunk logger is used
 # SPLUNK_URL=# https://<Splunk HEC>/services/collector/event/1.0

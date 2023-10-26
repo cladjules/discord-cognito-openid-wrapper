@@ -20,6 +20,8 @@ Globals:
           Ref: DiscordUrlParameter
         PROVIDER_NAME:
           Ref: ProviderName
+        ROBLOX_EMAIL_DOMAIN:
+          Ref: RobloxEmailDomain
 
 Parameters:
   DiscordClientIdParameter:
@@ -30,6 +32,10 @@ Parameters:
     Type: String
   ProviderName:
     Type: String
+  RobloxEmailDomain:
+    Type: String
+    Default: 'roblox.com'
+    MinLength: 1
   DiscordUrlParameter:
     Type: String
     Default: 'https://discord.com/api'
