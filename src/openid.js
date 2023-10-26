@@ -72,8 +72,20 @@ const getUserInfo = (accessToken) => {
   return Promise.resolve({});
 };
 
-const getAuthorizeUrl = (client_id, scope, state, response_type) =>
-  discord().getAuthorizeUrl(client_id, scope, state, response_type);
+const getAuthorizeUrl = (
+  client_id,
+  scope,
+  state,
+  response_type,
+  redirect_uri
+) =>
+  discord().getAuthorizeUrl(
+    client_id,
+    scope,
+    state,
+    response_type,
+    redirect_uri
+  );
 
 const getTokens = (code, state, host) =>
   discord()

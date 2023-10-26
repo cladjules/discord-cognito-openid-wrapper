@@ -58,7 +58,7 @@ const discordGet = (url, accessToken) =>
 module.exports = (apiBaseUrl, loginBaseUrl) => {
   const urls = getApiEndpoints(apiBaseUrl, loginBaseUrl || apiBaseUrl);
   return {
-    getAuthorizeUrl: (client_id, scope, state, response_type) => {
+    getAuthorizeUrl: (client_id, scope, state, response_type, redirect_uri) => {
       const cleanScope = scope
         .split(' ')
         .filter((i) => i !== 'openid')
@@ -67,7 +67,7 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
         urls.oauthAuthorize
       }?client_id=${client_id}&scope=${encodeURIComponent(
         cleanScope
-      )}&state=${state}&response_type=${response_type}`;
+      )}&state=${state}&response_type=${response_type}&redirect_uri=${redirect_uri}`;
     },
     getUserDetails: (accessToken) =>
       discordGet(urls.userDetails, accessToken).then(check),
