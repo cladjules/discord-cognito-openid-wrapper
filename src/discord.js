@@ -59,10 +59,13 @@ module.exports = (apiBaseUrl, loginBaseUrl) => {
   const urls = getApiEndpoints(apiBaseUrl, loginBaseUrl || apiBaseUrl);
   return {
     getAuthorizeUrl: (client_id, scope, state, response_type, redirect_uri) => {
-      const cleanScope = scope
-        .split(' ')
-        .filter((i) => i !== 'openid')
-        .join(' ');
+      const cleanScope =
+        PROVIDER_NAME === 'roblox'
+          ? scope
+          : scope
+              .split(' ')
+              .filter((i) => i !== 'openid')
+              .join(' ');
       return `${
         urls.oauthAuthorize
       }?client_id=${client_id}&scope=${encodeURIComponent(
