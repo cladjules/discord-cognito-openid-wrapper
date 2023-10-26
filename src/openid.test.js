@@ -5,7 +5,6 @@ const crypto = require('./crypto');
 jest.mock('./discord');
 jest.mock('./crypto');
 
-const MOCK_TOKEN = 'MOCK_TOKEN';
 const MOCK_CODE = 'MOCK_CODE';
 
 describe.skip('openid domain layer', () => {
@@ -34,34 +33,6 @@ describe.skip('openid domain layer', () => {
               updated_at: '2008-01-14T04:33:35Z',
             })
           );
-        });
-        describe.skip('with a primary email', () => {
-          beforeEach(() => {
-            mockEmailsWithPrimary(true);
-          });
-          it('Returns the aggregated complete object', async () => {
-            const response = await openid.getUserInfo(MOCK_TOKEN);
-            expect(response).toEqual({
-              email: 'email@example.com',
-              email_verified: true,
-              name: 'some name',
-              picture: 'picture.jpg',
-              preferred_username: 'username',
-              profile: 'some profile',
-              sub: 'undefined',
-              updated_at: 1200285215,
-              website: 'website',
-            });
-          });
-        });
-        describe.skip('without a primary email', () => {
-          beforeEach(() => {
-            mockEmailsWithPrimary(false);
-          });
-          it('fails', () =>
-            expect(openid.getUserInfo('MOCK_TOKEN')).rejects.toThrow(
-              new Error('User did not have a primary email address')
-            ));
         });
       });
     });

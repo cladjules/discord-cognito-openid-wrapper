@@ -1,10 +1,10 @@
 #!/bin/bash -eu
 
 # Variables always required
-export OAUTH_CLIENT_ID=# <Discord OAuth App Client ID>
-export OAUTH_CLIENT_SECRET=# <Discord OAuth App Client Secret>
+export OAUTH_CLIENT_ID=# <Provider OAuth App Client ID>
+export OAUTH_CLIENT_SECRET=# <Provider OAuth App Client Secret>
 export COGNITO_REDIRECT_URI=# https://<Your Cognito Domain>/oauth2/idpresponse
-# Change these if used with Discord Enterprise (see below)
+# Change these if used with Provider Enterprise (see below)
 # export PROVIDER_NAME=discord|roblox // discord and roblox are supported right now
 export PROVIDER_NAME=discord
 export OAUTH_API_URL=https://discord.com/api
