@@ -64,7 +64,6 @@ const getUserInfo = (accessToken) => {
               : new Date()
           ),
         };
-        logger.info('Resolved claims: %j', claims, {});
         logger.debug('Resolved claims: %j', claims, {});
         return claims;
       });
