@@ -48,9 +48,6 @@ const getUserInfo = (accessToken) => {
         // OpenID. The mapping was constructed by following
         // https://create.roblox.com/docs/en-us/cloud/reference/oauth2#get-v1userinfo
         // and http://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
-
-        const username = userDetails.nickname || userDetails.name;
-
         const claims = {
           sub: `${userDetails.sub}`, // OpenID requires a string
           email: `${userDetails.name}@roblox.com`,
