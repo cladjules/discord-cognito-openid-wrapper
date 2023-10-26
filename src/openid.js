@@ -39,13 +39,13 @@ const getUserInfo = (accessToken) => {
         return claims;
       });
   }
-  console.log('PROVIDER_NAME', PROVIDER_NAME);
+  logger.info('PROVIDER_NAME', PROVIDER_NAME);
   if (PROVIDER_NAME === 'roblox') {
     return discord()
       .getUserDetails(accessToken)
       .then((userDetails) => {
-        console.log('userDetails');
-        console.log(userDetails);
+        logger.info('userDetails');
+        logger.info(userDetails);
         logger.debug('Fetched user details: %j', userDetails, {});
         // Here we map the discord user response to the standard claims from
         // OpenID. The mapping was constructed by following
