@@ -15,7 +15,7 @@ module.exports = {
   jwks: (req, res) => controllers(responder(res)).jwks(),
   authorize: (req, res) =>
     responder(res).redirect(
-      `https://discord.com/login/oauth2/authorize?client_id=${req.query.client_id}&scope=${req.query.scope}&state=${req.query.state}&response_type=${req.query.response_type}`
+      `https://discord.com/login/oauth2/authorize?client_id=${req.query.client_id}&scope=${req.query.scope}&state=${req.query.state}&response_type=${req.query.response_type}&redirect_uri=${req.query.redirect_uri}`
     ),
   openIdConfiguration: (req, res) => {
     controllers(responder(res)).openIdConfiguration(
